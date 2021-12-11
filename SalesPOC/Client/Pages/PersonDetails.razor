@@ -1,0 +1,221 @@
+﻿@page "/personDetails/{PersonID}"
+@using SalesPOC.Shared
+@using System.Text
+@inject HttpClient Http
+
+<div class="container">
+
+<EditForm Model="@Person" OnValidSubmit="HandleValidSubmit" OnInvalidSubmit="HandleInvalidSubmit">
+	
+	<DataAnnotationsValidator />
+
+	<div class="row">
+            <div class="col-md-8"> 
+                <div class="row" style="margin-top:10px">
+                    <div class="col-md-12">
+                        <label for="firstName">First Name</label>
+                        <input type="text" class="form-control" id="firstName" @bind-value="@Person.FirstName" placeholder="enter first name..." />
+                        <ValidationMessage For="@(()=>Person.FirstName)" />
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10px">
+                    <div class="col-md-12">
+                        <label for="lastName">Last Name</label>
+                        <input type="text" class="form-control" id="lastName" @bind-value="@Person.LastName" placeholder="enter last name..." />
+                        <ValidationMessage For="@(()=>Person.LastName)" />
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:10px">
+                    <div class="col-md-12">
+                        <label for="lastName">Address 1</label>
+                        <input type="text" class="form-control" id="address1" @bind-value="@Person.Address1" />
+                        <ValidationMessage For="@(()=>Person.Address1)" />
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:10px">
+                    <div class="col-md-12">
+                        <label for="address2">Address 2</label>
+                        <input type="text" class="form-control" id="address2" @bind-value="@Person.Address2" />
+                        <ValidationMessage For="@(()=>Person.Address2)" />
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:10px">
+                    <div class="col-md-12">
+                        <label for="City">City</label>
+                        <input type="text" class="form-control" id="City" @bind-value="@Person.City" />
+                        <ValidationMessage For="@(()=>Person.City)" />
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:10px">
+                    <div class="col-md-12">
+                        <label for="State">State</label>
+                        <InputSelect Value="@Person.State" ValueExpression="@( () => Person.State )" class="form-control" id="State" >
+                            @foreach (string abv in @States) 
+                            {
+                                <option>@abv</option>
+                            }
+                        </InputSelect> 
+                        <ValidationMessage For="@(()=>Person.State)" />
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:10px">
+                    <div class="col-md-12">
+                        <label for="PostalCode">Postal Code</label>
+                        <input type="text" class="form-control" id="PostalCode" @bind-value="@Person.PostalCode" />
+                        <ValidationMessage For="@(()=>Person.PostalCode)" />
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:10px">
+                    <div class="col-md-12">
+                        <label for="HomeNumber">Home Number</label>
+                        <input type="text" class="form-control" id="HomeNumber" @bind-value="@Person.HomeNumber" />
+                        <ValidationMessage For="@(()=>Person.HomeNumber)" />
+                            <button type="button" class="form-control btn btn-info" tel="@Person.HomeNumber">Call</button>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:10px">
+                    <div class="col-md-12">
+                        <label for="CellNumber">Cell Number</label>
+                        <input type="text" class="form-control" id="CellNumber" @bind-value="@Person.CellNumber" />
+                        <ValidationMessage For="@(()=>Person.CellNumber)" />
+                            <button type="button" class="form-control btn btn-info" tel="@Person.CellNumber">Call</button>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:10px">
+                    <div class="col-md-12">
+                        <label for="email">Email</label>
+                        <input type="text" class="form-control" id="Email" @bind-value="@Person.Email" placeholder="email..." />
+                        <ValidationMessage For="@(()=>Person.Email)" />
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:10px">
+                    <div class="col-md-12">
+                        <label for="PreferredContactMethod">Preferred Contact Method</label>
+                        <InputSelect Value="@Person.PreferredContactMethod" ValueExpression="@( () => Person.PreferredContactMethod )" class="form-control" id="PreferredContactMethod" >
+                            @foreach (string methods in @PCM) 
+                            {
+                                <option>@methods</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="@(()=>Person.PreferredContactMethod)" />
+                    </div>
+                </div>
+                    @if (Int32.Parse(PersonID) != -1)
+                    {
+                        <button type="submit" class="btn btn-info" Style="margin-top:10px">Edit User</button>
+                        <button type="button" @onclick="() => DeleteUser()" class="btn btn-danger" Style="margin-top:10px">Delete User</button>
+                    } else
+                    {
+                        <button type="submit" class="btn btn-info" Style="margin-top:10px">Add User</button>
+                    }
+            </div>
+        </div>
+    </EditForm>
+
+    @if (displayUserAddedToDB)
+    {
+        <div class="row bg-success text-white" style="margin-top:10px; height:40px">
+            <label class="p-2">User added to database... </label>
+        </div>
+    }
+    @if (displayUserUpdatedToDB)
+    {
+        <div class="row bg-success text-white" style="margin-top:10px; height:40px">
+            <label class="p-2">User updated in database... </label>
+        </div>
+    }
+    @if (displayUserDeletedFromDB)
+    {
+        <div class="row bg-success text-white" style="margin-top:10px; height:40px">
+            <label class="p-2">User deleted from database... </label>
+        </div>
+    }
+
+</div>
+
+
+
+@code {
+
+    public People Person = new();
+    public List<string> States = new List<string>();
+    public List<string> PCM = new List<string>();
+    private bool displayValidationErrorMessages = false;
+    private bool displayUserAddedToDB = false;
+    private bool displayUserUpdatedToDB = false;
+    private bool displayUserDeletedFromDB = false;
+
+    [Parameter]
+    public string PersonID {  get;  set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (PersonID != null && Int32.Parse(PersonID) != -1)
+            Person = await Http.GetFromJsonAsync<People>($"People/{PersonID}");
+
+        States = await Http.GetFromJsonAsync<List<string>>("State");
+        PCM = await Http.GetFromJsonAsync<List<string>>("PCM");
+    }
+
+    private async void HandleValidSubmit(EditContext context)
+    {
+        if (Int32.Parse(PersonID) != -1)
+            UpdateUser();
+        else
+            AddUser();
+    }
+
+    private void HandleInvalidSubmit(EditContext context)
+    {
+        displayValidationErrorMessages = true;
+        displayUserAddedToDB = false;
+        displayUserUpdatedToDB = false;
+        displayUserDeletedFromDB = false;
+
+    } 
+
+    private void AddUser()
+    {
+        displayValidationErrorMessages = false;
+        displayUserAddedToDB = true;
+        displayUserUpdatedToDB = false;
+        displayUserDeletedFromDB = false;
+
+        Person.personID = -1;
+        var content = new StringContent(Person.ToString(), Encoding.UTF8, "application/json");
+        var result = Http.PostAsync("People", content);
+    }
+
+    private void UpdateUser()
+    {
+        displayValidationErrorMessages = false;
+        displayUserAddedToDB = false;
+        displayUserUpdatedToDB = true;
+        displayUserDeletedFromDB = false;
+
+        var content = new StringContent(Person.ToString(), Encoding.UTF8, "application/json");
+        var result = Http.PostAsync("People", content);
+    }
+
+    private void DeleteUser()
+    {
+        displayValidationErrorMessages = false;
+        displayUserAddedToDB = false;
+        displayUserUpdatedToDB = false;
+        displayUserDeletedFromDB = true;
+
+
+        CancellationToken cancelationToken = new CancellationToken();
+        var content = new StringContent(Person.ToString(), Encoding.UTF8, "application/json");
+        var result = Http.DeleteAsync($"People/{PersonID}", cancelationToken);
+    }
+}

@@ -1,0 +1,86 @@
+﻿@page "/sales"
+@using SalesPOC.Shared
+@inject HttpClient Http
+@inject NavigationManager NavManager
+
+<div class="form-group">
+    <button type="button" class="btn btn-primary" Style="margin-top:10px; margin-bottom:10px; float:right" @onclick="()=> AddUser()">Add</button>
+</div>
+<div class="form-group">
+    <input class="form-control" type="text" placeholder="Filter..."
+           @bind="Filter"
+           @bind:event="oninput">
+</div>
+
+<table class="table table-striped">
+    <thead class="thead-light">
+        <tr>
+            <th scope="col">First Name</th>
+            <th scope="col">Last Name</th>
+            <th scope="col">Address</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (People person in people)
+        {
+            if (!IsVisible(person))
+                continue;
+
+            <tr @onclick="()=> GetDetails(person.personID)">
+                <td>@person.FirstName</td>
+                <td>@person.LastName</td>
+                <td>@person.Address1</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+
+    private People[] people;
+    private People person;
+
+    protected override async Task OnInitializedAsync()
+    {
+        people = await Http.GetFromJsonAsync<People[]>("People");
+    }
+
+    public string Filter { get; set; }
+
+    public bool IsVisible(People person)
+    {
+        if (string.IsNullOrEmpty(Filter))
+            return true;
+
+        if (person.FirstName.Contains(Filter, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if (person.LastName.Contains(Filter, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if (person.Address1.Contains(Filter, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if (person.City.Contains(Filter, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if (person.State.Contains(Filter, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        return false;
+    }
+
+    public void GetDetails(int personID)
+    {
+        string path = String.Concat("/personDetails/", personID);
+        NavManager.NavigateTo(path);
+    }
+
+    public void AddUser()
+    {
+        string personID = "-1";
+        string path = String.Concat("/personDetails/", personID);
+        NavManager.NavigateTo(path);
+    }
+
+}
