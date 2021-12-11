@@ -10,7 +10,7 @@
 	<DataAnnotationsValidator />
 
 	<div class="row">
-            <div class="col-md-8"> 
+            <div class="col-md-12"> 
                 <div class="row" style="margin-top:10px">
                     <div class="col-md-12">
                         <label for="firstName">First Name</label>
@@ -76,7 +76,6 @@
                         <label for="HomeNumber">Home Number</label>
                         <input type="text" class="form-control" id="HomeNumber" @bind-value="@Person.HomeNumber" />
                         <ValidationMessage For="@(()=>Person.HomeNumber)" />
-                            <button type="button" class="form-control btn btn-info" tel="@Person.HomeNumber">Call</button>
                     </div>
                 </div>
 
@@ -85,7 +84,6 @@
                         <label for="CellNumber">Cell Number</label>
                         <input type="text" class="form-control" id="CellNumber" @bind-value="@Person.CellNumber" />
                         <ValidationMessage For="@(()=>Person.CellNumber)" />
-                            <button type="button" class="form-control btn btn-info" tel="@Person.CellNumber">Call</button>
                     </div>
                 </div>
 
@@ -111,7 +109,7 @@
                 </div>
                     @if (Int32.Parse(PersonID) != -1)
                     {
-                        <button type="submit" class="btn btn-info" Style="margin-top:10px">Edit User</button>
+                        <button type="submit" class="btn btn-info" Style="margin-top:10px">Update User</button>
                         <button type="button" @onclick="() => DeleteUser()" class="btn btn-danger" Style="margin-top:10px">Delete User</button>
                     } else
                     {
