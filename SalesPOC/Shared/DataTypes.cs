@@ -42,6 +42,8 @@ namespace SalesPOC.Shared
         public string Email { get; set; }
 
         public string PreferredContactMethod { get; set; }
+
+        public string AssignedLO { get; set; }
     }
 
     public static class States

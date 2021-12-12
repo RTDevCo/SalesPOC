@@ -2,6 +2,7 @@
 @using SalesPOC.Shared
 @using System.Text
 @inject HttpClient Http
+@inject NavigationManager NavManager
 
 <div class="container">
 
@@ -9,7 +10,7 @@
 	
 	<DataAnnotationsValidator />
 
-	<div class="row">
+	<div class="row" style="margin-bottom:10px">
             <div class="col-md-12"> 
                 <div class="row" style="margin-top:10px">
                     <div class="col-md-12">
@@ -56,7 +57,7 @@
                         <InputSelect Value="@Person.State" ValueExpression="@( () => Person.State )" class="form-control" id="State" >
                             @foreach (string abv in @States) 
                             {
-                                <option>@abv</option>
+                                <option value="@abv">@abv</option>
                             }
                         </InputSelect> 
                         <ValidationMessage For="@(()=>Person.State)" />
@@ -107,14 +108,28 @@
                         <ValidationMessage For="@(()=>Person.PreferredContactMethod)" />
                     </div>
                 </div>
+
+                <div class="row" style="margin-top:10px">
+                    <div class="col-md-12">
+                        <label for="AssignedLO">Assigned Loan Officer</label>
+                        <InputSelect Value="@Person.AssignedLO" ValueExpression="@( () => Person.AssignedLO )" class="form-control" id="AssignedLO" >
+                                <option>Thomas Braddon</option>
+                                <option>Becky Hernandes</option>
+                                <option>Sue Ann</option>
+                        </InputSelect>
+                        <ValidationMessage For="@(()=>Person.PreferredContactMethod)" />
+                    </div>
+                </div>
+
                     @if (Int32.Parse(PersonID) != -1)
                     {
-                        <button type="submit" class="btn btn-info" Style="margin-top:10px">Update User</button>
-                        <button type="button" @onclick="() => DeleteUser()" class="btn btn-danger" Style="margin-top:10px">Delete User</button>
+                        <button type="submit" class="btn btn-primary" Style="margin-top:10px">Update User</button>
+                        <button type="button" @onclick="() => DeleteUser()" class="btn btn-danger" Style="margin-top:10px; margin-left:10px">Delete User</button>
                     } else
                     {
-                        <button type="submit" class="btn btn-info" Style="margin-top:10px">Add User</button>
+                        <button type="submit" class="btn btn-primary" Style="margin-top:10px">Add User</button>
                     }
+                    <button type="button" @onclick="() => Back()" class="btn btn-info" Style="margin-top:10px; margin-left:10px;">Back</button>
             </div>
         </div>
     </EditForm>
@@ -215,5 +230,10 @@
         CancellationToken cancelationToken = new CancellationToken();
         var content = new StringContent(Person.ToString(), Encoding.UTF8, "application/json");
         var result = Http.DeleteAsync($"People/{PersonID}", cancelationToken);
+    }
+
+    private void Back()
+    {
+        NavManager.NavigateTo("/");
     }
 }
